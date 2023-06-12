@@ -31,6 +31,36 @@ def drawSubFrame(frame, sub_frame, xyxy):
     frame[y1:y2, x1:x2] = sub_frame
     # print(frame[y1:y2, x1:x2].shape)
     return frame
+
+def cal_cycler(isCycler):
+    cnt = 0
+    for item in isCycler:
+        if item[1]:
+            cnt += 1
+    return cnt
+
+def addInfoText(frame, isCycler):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 1
+    font_color = (255, 255, 255)  # 白色
+    line_type = 2
+    
+    cycler_cnt = 0
+    people_cnt = 0
+    for item in isCycler:
+        if item[1]:
+            cycler_cnt += 1
+        people_cnt += 1
+    
+    text = f"people number : {cycler_cnt}\n" + f"cycler number : {cycler_cnt}\n"
+    text_size, _ = cv2.getTextSize(text, font, font_scale, line_type)
+    text_x = frame.shape[1] - text_size[0] - 10  # 10 是文字与右边界的距离
+    text_y = text_size[1] + 10  # 10 是文字与顶部边界的距离 
+    cv2.putText(frame, text, (text_x, text_y), font, font_scale, font_color, line_type)
+
+    
+    
+    
     
 
 mp_drawing = mp.solutions.drawing_utils
@@ -98,6 +128,9 @@ def main(inp, mylabels_path='video_obj_detect'):
 
             # temp_c = 0
 
+            # 统计每一帧内人的是否骑车
+            isCycler = []
+            
             for obj in objs:
                 # temp_c += 1
 
@@ -128,6 +161,11 @@ def main(inp, mylabels_path='video_obj_detect'):
                     knee = np_landmarks[mp_pose.PoseLandmark.LEFT_KNEE]
                     hip = np_landmarks[mp_pose.PoseLandmark.LEFT_HIP]
                     angle = cal_angle(ankle, knee, hip)
+                    if angle < 140:
+                        isCycler.append([obj, True])
+                    else:
+                        isCycler.append([obj, False])
+                        
                     info_list.append([idx+1, angle])
                 
                 # if idx+1 == 28:
@@ -141,6 +179,7 @@ def main(inp, mylabels_path='video_obj_detect'):
                 # if idx+1 == 28:
                 #     cv2.imwrite(f'test_28_frame_{temp_c}_after.jpg', frame)
 
+            addInfoText(frame, isCycler)
             source.show(frame)
             vid_writer.write(frame)
 

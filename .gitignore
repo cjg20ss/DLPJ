@@ -1,2 +1,5 @@
 video_obj_detect/
 input_video/
+*/.DS_Store
+.DS_Store
+/segmentation/road-segmenttation-4
