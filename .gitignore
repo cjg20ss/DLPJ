@@ -3,3 +3,6 @@ input_video/
 */.DS_Store
 .DS_Store
 /segmentation/road-segmenttation-6
+/segmentation/seg_video/*
+/segmentation/seg_real-1
+/segmentation/seg-1
