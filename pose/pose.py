@@ -51,18 +51,42 @@ def addInfoText(frame, cycler_cnt, person_cnt, bicycle_cnt, motorcycle_cnt):
     # text_y = text_size[1] + 10  # 10 是文字与顶部边界的距离 
     # cv2.putText(frame, text, (text_x, text_y), font, font_scale, font_color, line_type)
     
+    total_vehicle_num = bicycle_cnt+motorcycle_cnt
+    one_motorcycle_num = bicycle_cnt+2*motorcycle_cnt-cycler_cnt
+    two_motorcycle_num = cycler_cnt-bicycle_cnt-motorcycle_cnt
+
+    if total_vehicle_num == 0:
+        one_motorcycle_num = 0
+        two_motorcycle_num = 0
+    
+    if one_motorcycle_num < 0:
+        one_motorcycle_num = 0
+    
+    if two_motorcycle_num < 0:
+        two_motorcycle_num = 0
+
+    # row1 = f"总人数: {person_cnt}"
+    # row2 = f"走路: {person_cnt-cycler_cnt}"
+    # row3 = f"骑行: {cycler_cnt}"
+
+    # row4 = f"总车数: {total_vehicle_num}"
+    # row5 = f"自行车: {bicycle_cnt}"
+    # row6 = f"单人摩托: {one_motorcycle_num}"
+    # row7 = f"双人摩托: {two_motorcycle_num}"
+
+    # row_list = [row1, row2, row3, row4, row5, row6, row7]
+
     row1 = f"总人数: {person_cnt}"
     row2 = f"走路: {person_cnt-cycler_cnt}"
     row3 = f"骑行: {cycler_cnt}"
 
-    row4 = f"总车数: {bicycle_cnt+motorcycle_cnt}"
+    row4 = f"总车数: {total_vehicle_num}"
     row5 = f"自行车: {bicycle_cnt}"
-    row6 = f"单人摩托: {bicycle_cnt+2*motorcycle_cnt-cycler_cnt}"
-    row7 = f"双人摩托: {cycler_cnt-bicycle_cnt-motorcycle_cnt}"
-
-
+    row6 = f"单人摩托: {one_motorcycle_num}"
+    row7 = f"双人摩托: {two_motorcycle_num}"
     
-    row_list = [row1, row2, row3, row4, row5, row6, row7]
+    row_list = [row1 + " " + row2 + " " + row3, row4 + " " + row5 + " " + row6 + " " + row7]
+
     text_size_list = []
     for row in row_list:
         # print(row)
@@ -148,12 +172,12 @@ def main(inp, mylabels_path='video_obj_detect'):
                         xyxy = [int(a), int(b), int(c), int(d)]
                         conf = float(conf)
 
-                        if cls == 0:  # 默认的coco.yaml中，0表示person这一类别
+                        if cls == 2:
                             objs.append(xyxy)
                             person_cnt += 1
-                        elif cls == 1:
+                        elif cls == 0:
                             bicycle_cnt += 1
-                        elif cls == 3:
+                        elif cls == 1:
                             motorcycle_cnt += 1
                     # print(f'[debug] {txt_path} 人{person_cnt} 自{bicycle_cnt} 摩{motorcycle_cnt}')
 
